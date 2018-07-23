@@ -84,6 +84,11 @@
         type: Object,
         required: false,
         default: () => ({})
+      },
+      manualDestroy: {
+        type: Boolean,
+        required: false,
+        default: false
       }
     },
     data() {
@@ -120,12 +125,9 @@
       this.update()
     },
     beforeDestroy() {
-      this.$nextTick(function() {
-        if (this.swiper) {
-          this.swiper.destroy && this.swiper.destroy()
-          delete this.swiper
-        }
-      })
+      if (!this.manualDestroy) {
+        this.$nextTick(this.destroyInstance())
+      }
     },
     methods: {
       update() {
@@ -150,6 +152,12 @@
             vm.$emit(eventName.replace(/([A-Z])/g, '-$1').toLowerCase(), ...arguments)
           })
         })
+      },
+      destroyInstance() {
+        if (this.swiper) {
+          this.swiper.destroy && this.swiper.destroy()
+          delete this.swiper
+        }
       }
     }
   }
